@@ -7,7 +7,7 @@ document.getElementById("add-group-btn").addEventListener("click", () => {
   group.innerHTML = `
     <div class="card-body">
       <h2 contenteditable="true" class="group-title mb-3">Grupo ${groupCount}</h2>
-      <button class="btn btn-outline-primary btn-sm mb-3 add-field-btn">Criar Campo</button>
+      <button class="btn btn-outline-add-campo btn-sm mb-3 add-field-btn">Criar Campo</button>
       <div class="fields-container d-flex flex-column gap-2"></div>
     </div>
   `;
