@@ -1,0 +1,15 @@
+
+.add-field-btn{
+    border-color: #8b4513;
+    color: #8b4513;
+}
+
+.add-field-btn :hover{
+    background-color: #41cc64;
+}
+
+#add-group-btn{
+    background-color: #8b4513;
+    border: none;
+    color: #ffffff;
+}

@@ -1,0 +1,189 @@
+
+{% comment %}
+templates/base.html
+Este é o template base para o projeto Cícero, com o estilo "terroso".
+Ele define a estrutura principal, a barra de navegação e os blocos de conteúdo.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- O título da página é dinâmico -->
+    <title>{% block title %}Sistema Cícero{% endblock %}</title>
+    
+    <!-- Links para Bootstrap CSS e Ícones -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Estilos CSS do tema "terroso" -->
+    <style>
+        :root {
+            --primary: #8B4513;
+            --primary-hover: #A0522D;
+            --secondary: #D2B48C;
+            --secondary-hover: #D2B48CE6;
+            --background: #FAF5F0;
+            --navbar-bg: #654321;
+            --navbar-text: #FFFFFF;
+            --card-bg: #F5F5DC;
+            --btn-primary-bg: #A0522D;
+            --btn-primary-text: #FFFFFF;
+            --btn-secondary-bg: #DEB887;
+            --btn-secondary-text: #2F1B14;
+            --text-color: #2F1B14;
+            --border-color: #D2B48C;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-color);
+            padding-top: 56px; /* Espaço para a navbar fixa */
+        }
+
+        .navbar {
+            background-color: var(--navbar-bg) !important;
+        }
+
+        .navbar-brand, .nav-link, .dropdown-item {
+            color: var(--navbar-text) !important;
+        }
+
+        .dropdown-menu {
+            background-color: var(--navbar-bg);
+            border-color: var(--primary-hover);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--btn-primary-bg) !important;
+            border-color: var(--btn-primary-bg) !important;
+            color: var(--btn-primary-text) !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover) !important;
+            border-color: var(--primary-hover) !important;
+        }
+
+        .btn-outline-secondary {
+            color: var(--btn-secondary-text) !important;
+            border-color: var(--btn-secondary-bg) !important;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--btn-secondary-bg) !important;
+            color: var(--btn-secondary-text) !important;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--navbar-bg) 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        {% block extra_css %}{% endblock %}
+    </style>
+    
+    <!-- Bloco para CSS adicional de páginas específicas -->
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Menu Superior (Navbar) -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'sistema:dashboard' %}">
+                <i class="bi bi-clipboard-data"></i> Cícero
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                
+                <!-- Lógica de autenticação para exibir os menus -->
+                {% if user.is_authenticated %}
+                    <!-- Itens do menu para usuários LOGADOS -->
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sistema:dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'assistencia_social:gerenciar_projetos' %}"><i class="bi bi-collection"></i> Projetos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'usuarios:gerenciar_usuarios' %}"><i class="bi bi-people"></i> Usuários</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'formularios:gerenciar_formularios' %}"><i class="bi bi-file-earmark-text"></i> Formulários</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'relatorios:visualizar_relatorios' %}"><i class="bi bi-graph-up"></i> Relatórios</a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Dropdown do usuário logado -->
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span>{{ user.nome_completo|truncatechars:50 }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'usuarios:perfil_usuario' %}"><i class="bi bi-person"></i> Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Configurações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <!-- Formulário de Logout (por segurança, via POST) -->
+                                <form id="logout-form" action="{% url 'usuarios:logout' %}" method="post" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                                <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit();">
+                                    <i class="bi bi-box-arrow-right"></i> Sair
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                {% else %}
+                    <!-- Item do menu para usuários NÃO LOGADOS -->
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-right"></i> Login
+                            </a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Bloco principal de conteúdo que será substituído pelas páginas filhas -->
+    <main class="main-content">
+        {% block content %}
+            <!-- O conteúdo específico de cada página será inserido aqui. -->
+            <!-- Por exemplo, a página de login terá seu formulário aqui. -->
+        {% endblock %}
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Bloco para JavaScript adicional de páginas específicas -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
