@@ -15,7 +15,7 @@ if (editingFormId) {
 }
 
 // ---------- Criar novo grupo ----------
-document.getElementById("add-group-btn").addEventListener("click", () => {
+document.getElementById("add-group-btn1").addEventListener("click", () => {
   createGroup();
 });
 
@@ -27,7 +27,7 @@ document.getElementById("save-form-btn").addEventListener("click", () => {
   document.querySelectorAll("#groups-container .card").forEach((groupEl) => {
     const groupTitle = groupEl.querySelector(".group-title").innerText;
     const fields = [];
-    groupEl.querySelectorAll(".fields-container input").forEach((input) => {
+    groupEl.querySelectorAll(".fields-container .field-wrapper input").forEach((input) => {
       fields.push({ placeholder: input.placeholder, value: input.value });
     });
 
@@ -57,7 +57,7 @@ document.getElementById("save-form-btn").addEventListener("click", () => {
   window.location.href = "crud.html";
 });
 
-// ---------- Função para criar grupo ----------
+
 function createGroup(title = `Grupo ${++groupCount}`, fieldsData = []) {
   const group = document.createElement("div");
   group.className = "card border-secondary";
@@ -67,30 +67,21 @@ function createGroup(title = `Grupo ${++groupCount}`, fieldsData = []) {
         <h2 contenteditable="true" class="group-title mb-0">${title}</h2>
         <button class="btn btn-sm btn-danger delete-group-btn">Excluir Grupo</button>
       </div>
-      <button class="btn btn-outline-primary btn-sm mb-3 add-field-btn">Criar Campo</button>
+      <button class="btn btn-outline-primary1 btn-sm mb-3 add-field-btn">Criar Campo</button>
       <div class="fields-container d-flex flex-column gap-2"></div>
     </div>
   `;
 
   const fieldsContainer = group.querySelector(".fields-container");
 
-  // Preenche campos existentes (se houver)
+  // Preenche campos existentes (com botão de excluir)
   fieldsData.forEach((f) => {
-    const field = document.createElement("input");
-    field.type = "text";
-    field.placeholder = f.placeholder;
-    field.value = f.value;
-    field.className = "form-control";
-    fieldsContainer.appendChild(field);
+    addField(fieldsContainer, f.placeholder, f.value);
   });
 
   // Evento criar campo
   group.querySelector(".add-field-btn").addEventListener("click", () => {
-    const field = document.createElement("input");
-    field.type = "text";
-    field.placeholder = "Digite algo...";
-    field.className = "form-control";
-    fieldsContainer.appendChild(field);
+    addField(fieldsContainer);
   });
 
   // Evento excluir grupo
@@ -101,4 +92,29 @@ function createGroup(title = `Grupo ${++groupCount}`, fieldsData = []) {
   });
 
   document.getElementById("groups-container").appendChild(group);
+}
+
+// ---------- Criar campo com botão de excluir ----------
+function addField(container, placeholder = "Digite algo...", value = "") {
+  const wrapper = document.createElement("div");
+  wrapper.className = "field-wrapper d-flex align-items-center gap-2";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = placeholder;
+  input.value = value;
+  input.className = "form-control";
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "btn btn-sm btn-danger";
+  deleteBtn.innerText = "Excluir";
+  deleteBtn.addEventListener("click", () => {
+    if (confirm("Deseja excluir este campo?")) {
+      wrapper.remove();
+    }
+  });
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(deleteBtn);
+  container.appendChild(wrapper);
 }
